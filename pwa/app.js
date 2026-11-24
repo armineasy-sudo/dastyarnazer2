@@ -94,8 +94,8 @@ function saveCurrentProject() {
   project.inspector = document.getElementById("inspectorName").value;
   project.date = document.getElementById("visitDate").value;
   project.checklist = items;
-  project.isoData = canvas.toDataURL();
-  project.planData = planCanvas.toDataURL();
+  project.isoData = canvas.toDataURL("image/png");
+  project.planData = planCanvas.toDataURL("image/png");
   saveAll();
 }
 
@@ -213,6 +213,12 @@ let currentDirection = "north";
 let lastPoint = { x: 350, y: 250 };
 let planRisers = [];
 
+// فعال‌سازی بهبود کیفیت تصویر
+ctx.imageSmoothingEnabled = true;
+ctx.imageSmoothingQuality = "high";
+planCtx.imageSmoothingEnabled = true;
+planCtx.imageSmoothingQuality = "high";
+
 function getPipeColor() {
   const size = document.getElementById("pipeSize").value;
   const colors = {
@@ -281,6 +287,7 @@ function drawPipeInDirection(dir, length = 80) {
   ctx.strokeStyle = getPipeColor();
   ctx.lineWidth = 5;
   ctx.lineCap = "round";
+  ctx.lineJoin = "round";
   ctx.beginPath();
   ctx.moveTo(lastPoint.x, lastPoint.y);
   ctx.lineTo(endX, endY);
@@ -324,16 +331,23 @@ function drawRiserOnPlan(x, y) {
   planRisers.push({x, y});
 }
 
+function getHighQualityDataURL(sourceCanvas) {
+  return sourceCanvas.toDataURL("image/png");
+}
+
 function preparePrint() {
   const mapsDiv = document.getElementById("reportMaps");
+  const planImg = getHighQualityDataURL(planCanvas);
+  const isoImg = getHighQualityDataURL(canvas);
+
   mapsDiv.innerHTML = `
-    <div style="text-align:center; margin:1rem 0;">
+    <div style="text-align:center; margin:1.5rem 0; page-break-inside:avoid;">
       <h3>پلان ۲بعدی</h3>
-      <img src="${planCanvas.toDataURL()}" style="max-width:100%; height:auto; border:1px solid #ccc;" />
+      <img src="${planImg}" style="max-width:90%; height:auto; border:1px solid #999; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" />
     </div>
-    <div style="text-align:center; margin:1rem 0;">
+    <div style="text-align:center; margin:1.5rem 0; page-break-inside:avoid;">
       <h3>نمای ایزومتریک</h3>
-      <img src="${canvas.toDataURL()}" style="max-width:100%; height:auto; border:1px solid #ccc;" />
+      <img src="${isoImg}" style="max-width:90%; height:auto; border:1px solid #999; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges;" />
     </div>
   `;
 }
@@ -444,7 +458,7 @@ document.getElementById("statusFilter").addEventListener("change", render);
 
 document.getElementById("printBtn").addEventListener("click", () => {
   preparePrint();
-  setTimeout(() => window.print(), 300);
+  setTimeout(() => window.print(), 400);
 });
 
 if ("serviceWorker" in navigator) {

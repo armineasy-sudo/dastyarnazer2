@@ -217,4 +217,9 @@ header h1 {
   .print-only { display: block; }
   .item { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 0.5rem; }
   #report { padding: 1cm; }
+  img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -ms-interpolation-mode: nearest-neighbor;
+  }
 }
