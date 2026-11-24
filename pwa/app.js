@@ -36,7 +36,8 @@ function createNewProject() {
     address: "",
     inspector: "",
     date: "",
-    checklist: JSON.parse(JSON.stringify(checklistData))
+    checklist: JSON.parse(JSON.stringify(checklistData)),
+    isoData: null
   };
   projects.push(newProject);
   currentProjectId = id;
@@ -71,6 +72,11 @@ function loadCurrentProject() {
   document.getElementById("projectAddress").value = project.address || "";
   document.getElementById("inspectorName").value = project.inspector || "";
   document.getElementById("visitDate").value = project.date || "";
+  if (project.isoData) {
+    loadIsoFromData(project.isoData);
+  } else {
+    clearCanvas();
+  }
 }
 
 function saveCurrentProject() {
@@ -81,6 +87,7 @@ function saveCurrentProject() {
   project.inspector = document.getElementById("inspectorName").value;
   project.date = document.getElementById("visitDate").value;
   project.checklist = items;
+  project.isoData = canvas.toDataURL();
   saveAll();
 }
 
@@ -119,7 +126,6 @@ function render() {
     </div>
   `).join("");
 
-  // گزارش
   const project = projects.find(p => p.id === currentProjectId) || {};
   document.getElementById("reportHeader").innerHTML = `
     <p><strong>نام پروژه:</strong> ${project.name || "پروژه نامشخص‌نشده"}</p>
@@ -179,6 +185,91 @@ function setNotes(id, notes) {
   saveCurrentProject();
 }
 
+// ابزار ایزومتریک ساده
+const canvas = document.getElementById("isoCanvas");
+const ctx = canvas.getContext("2d");
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+
+function clearCanvas() {
+  ctx.fillStyle = "#1E293B";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.strokeStyle = "#3B82F6";
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+}
+
+function loadIsoFromData(dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    clearCanvas();
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = dataUrl;
+}
+
+canvas.addEventListener("mousedown", (e) => {
+  isDrawing = true;
+  const rect = canvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+});
+
+canvas.addEventListener("mousemove", (e) => {
+  if (!isDrawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  lastX = x;
+  lastY = y;
+});
+
+canvas.addEventListener("mouseup", () => isDrawing = false);
+canvas.addEventListener("mouseout", () => isDrawing = false);
+
+// دکمه‌های ایزو
+ document.getElementById("addPipeBtn").addEventListener("click", () => {
+  alert("با کشیدن موس روی بوم، لوله مستقیم بکشید.");
+});
+
+document.getElementById("addElbowBtn").addEventListener("click", () => {
+  // رسم یک زانویی ساده ایزومتریک در مرکز
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  ctx.strokeStyle = "#F59E0B";
+  ctx.beginPath();
+  ctx.arc(cx, cy, 30, 0, Math.PI / 2);
+  ctx.stroke();
+  ctx.strokeStyle = "#3B82F6";
+});
+
+document.getElementById("addValveBtn").addEventListener("click", () => {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  ctx.strokeStyle = "#EF4444";
+  ctx.strokeRect(cx - 15, cy - 15, 30, 30);
+  ctx.beginPath();
+  ctx.moveTo(cx - 15, cy);
+  ctx.lineTo(cx + 15, cy);
+  ctx.stroke();
+  ctx.strokeStyle = "#3B82F6";
+});
+
+document.getElementById("clearCanvasBtn").addEventListener("click", () => {
+  clearCanvas();
+  saveCurrentProject();
+});
+
+document.getElementById("saveIsoBtn").addEventListener("click", () => {
+  saveCurrentProject();
+  alert("نقشه ایزومتریک در پروژه ذخیره شد.");
+});
+
 // رویدادها
 document.getElementById("projectSelect").addEventListener("change", (e) => {
   currentProjectId = e.target.value;
@@ -204,6 +295,7 @@ if ("serviceWorker" in navigator) {
 }
 
 // شروع
+clearCanvas();
 if (projects.length === 0) createNewProject();
 else {
   renderProjectSelect();
