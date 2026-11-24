@@ -186,6 +186,17 @@ function setNotes(id, notes) {
   saveCurrentProject();
 }
 
+// تب‌های ابزارها
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tool-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+  });
+});
+
 // ابزار ایزومتریک بهبودیافته (الهام از Spoolyard)
 const canvas = document.getElementById("isoCanvas");
 const ctx = canvas.getContext("2d");
@@ -215,7 +226,6 @@ function drawIsoGrid() {
   const step = 40;
   const angle = Math.PI / 6; // 30 درجه
 
-  // خطوط افقی مایل
   for (let y = 50; y < canvas.height; y += step) {
     ctx.beginPath();
     ctx.moveTo(0, y);
@@ -223,7 +233,6 @@ function drawIsoGrid() {
     ctx.stroke();
   }
 
-  // خطوط مایل به راست (۳۰ درجه)
   for (let x = -200; x < canvas.width + 200; x += step) {
     ctx.beginPath();
     ctx.moveTo(x, canvas.height);
@@ -231,7 +240,6 @@ function drawIsoGrid() {
     ctx.stroke();
   }
 
-  // خطوط مایل به چپ (۳۰ درجه)
   for (let x = -200; x < canvas.width + 200; x += step) {
     ctx.beginPath();
     ctx.moveTo(x, canvas.height);
@@ -262,7 +270,6 @@ function drawPipeInDirection(dir, length = 80) {
   ctx.lineTo(endX, endY);
   ctx.stroke();
 
-  // نقطه اتصال
   ctx.fillStyle = "#F1F5F9";
   ctx.beginPath();
   ctx.arc(endX, endY, 4, 0, Math.PI * 2);

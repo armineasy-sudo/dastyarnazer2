@@ -18,15 +18,40 @@ header h1 {
   margin: 0;
   font-size: 1.5rem;
 }
-.project-manager, .project-info, .iso-tool {
+.project-manager, .project-info, .mech-tools {
   background: #1E293B;
   padding: 1rem;
   margin: 1rem;
   border-radius: 10px;
 }
-.project-manager h2, .project-info h2, .iso-tool h2 {
+.project-manager h2, .project-info h2, .mech-tools h2 {
   margin-top: 0;
   font-size: 1.2rem;
+}
+.tools-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.tab-btn {
+  padding: 0.5rem 1rem;
+  background: #0F172A;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #CBD5E1;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+.tool-panel {
+  display: none;
+}
+.tool-panel.active {
+  display: block;
 }
 .iso-controls {
   display: flex;
@@ -172,7 +197,7 @@ header h1 {
 }
 @media print {
   body { background: white; color: black; }
-  .controls, header, .project-manager, .project-info, .iso-tool, .status-buttons, .notes { display: none !important; }
+  .controls, header, .project-manager, .project-info, .mech-tools, .status-buttons, .notes { display: none !important; }
   .print-only { display: block; }
   .item { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 0.5rem; }
   #report { padding: 1cm; }

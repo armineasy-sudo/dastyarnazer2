@@ -36,34 +36,54 @@
       </div>
     </section>
 
-    <section class="iso-tool">
-      <h2>ابزار ترسیم ایزومتریک گاز (بهبودیافته)</h2>
-      <div class="iso-controls">
-        <select id="pipeSize">
-          <option value="1/2">۱/۲ اینچ</option>
-          <option value="3/4">۳/۴ اینچ</option>
-          <option value="1">۱ اینچ</option>
-          <option value="1.5">۱ ۱/۲ اینچ</option>
-          <option value="2">۲ اینچ</option>
-        </select>
-        <button id="dirNorth">شمال (N)</button>
-        <button id="dirEast">شرق (E)</button>
-        <button id="dirSouth">جنوب (S)</button>
-        <button id="dirWest">غرب (W)</button>
-        <button id="dirUp">بالا (Up)</button>
-        <button id="dirDown">پایین (Down)</button>
-        <button id="addElbowBtn">زانویی ۹۰°</button>
-        <button id="addValveBtn">شیر</button>
-        <button id="addMeterBtn">کنتور گاز</button>
-        <button id="drawGridBtn">شبکه ایزومتریک</button>
-        <button id="clearCanvasBtn">پاک کردن</button>
-        <button id="saveIsoBtn">ذخیره در پروژه</button>
+    <!-- بخش ابزارهای مهندسی مکانیک -->
+    <section class="mech-tools">
+      <h2>ابزارهای مهندسی مکانیک</h2>
+      <div class="tools-tabs">
+        <button class="tab-btn active" data-tab="iso">ایزومتریک گاز</button>
+        <button class="tab-btn" data-tab="calc">محاسبات سریع</button>
+        <button class="tab-btn" data-tab="other">سایر ابزارها</button>
       </div>
-      <canvas id="isoCanvas" width="900" height="600"></canvas>
-      <div class="legend">
-        <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید تا لوله در همان جهت کشیده شود. شبکه راهنما ۳۰ درجه است.
+
+      <div id="tab-iso" class="tool-panel active">
+        <h3>ترسیم نقشه ایزومتریک گاز</h3>
+        <div class="iso-controls">
+          <select id="pipeSize">
+            <option value="1/2">۱/۲ اینچ</option>
+            <option value="3/4">۳/۴ اینچ</option>
+            <option value="1">۱ اینچ</option>
+            <option value="1.5">۱ ۱/۲ اینچ</option>
+            <option value="2">۲ اینچ</option>
+          </select>
+          <button id="dirNorth">شمال (N)</button>
+          <button id="dirEast">شرق (E)</button>
+          <button id="dirSouth">جنوب (S)</button>
+          <button id="dirWest">غرب (W)</button>
+          <button id="dirUp">بالا (Up)</button>
+          <button id="dirDown">پایین (Down)</button>
+          <button id="addElbowBtn">زانویی ۹۰°</button>
+          <button id="addValveBtn">شیر</button>
+          <button id="addMeterBtn">کنتور گاز</button>
+          <button id="drawGridBtn">شبکه ایزومتریک</button>
+          <button id="clearCanvasBtn">پاک کردن</button>
+          <button id="saveIsoBtn">ذخیره در پروژه</button>
+        </div>
+        <canvas id="isoCanvas" width="900" height="600"></canvas>
+        <div class="legend">
+          <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید تا لوله در همان جهت کشیده شود. شبکه راهنما ۳۰ درجه است.
+        </div>
+        <p class="hint">این نسخه با الهام از ساختار ابزارهای حرفه‌ای مانند Spoolyard ساخته شده است (گرید ایزومتریک + جهت‌یابی).</p>
       </div>
-      <p class="hint">این نسخه با الهام از ساختار ابزارهای حرفه‌ای مانند Spoolyard ساخته شده است (گرید ایزومتریک + جهت‌یابی).</p>
+
+      <div id="tab-calc" class="tool-panel">
+        <h3>محاسبات سریع</h3>
+        <p>به زودی ابزارهای محاسبه سایز لوله، افت فشار، و مصرف اضافه می‌شود.</p>
+      </div>
+
+      <div id="tab-other" class="tool-panel">
+        <h3>سایر ابزارها</h3>
+        <p>مکان برای ابزارهای آینده (چک‌لیست گاز، محاسبه گروه ساختمان و ...)</p>
+      </div>
     </section>
 
     <section class="controls">
