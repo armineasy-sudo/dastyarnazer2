@@ -18,13 +18,13 @@ header h1 {
   margin: 0;
   font-size: 1.5rem;
 }
-.project-info {
+.project-manager, .project-info {
   background: #1E293B;
   padding: 1rem;
   margin: 1rem;
   border-radius: 10px;
 }
-.project-info h2 {
+.project-manager h2, .project-info h2 {
   margin-top: 0;
   font-size: 1.2rem;
 }
@@ -34,15 +34,24 @@ header h1 {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
-.form-row input {
+.form-row input, .form-row select, .form-row button {
   flex: 1;
-  min-width: 150px;
+  min-width: 120px;
   padding: 0.6rem;
   border: 1px solid #334155;
   border-radius: 8px;
   background: #0F172A;
   color: #F1F5F9;
   font-size: 0.95rem;
+}
+.form-row button {
+  background: #3B82F6;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+.form-row button:hover {
+  background: #2563EB;
 }
 .controls {
   display: flex;
@@ -119,7 +128,7 @@ header h1 {
 }
 @media print {
   body { background: white; color: black; }
-  .controls, header, .project-info, .status-buttons, .notes { display: none !important; }
+  .controls, header, .project-manager, .project-info, .status-buttons, .notes { display: none !important; }
   .print-only { display: block; }
   .item { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 0.5rem; }
   #report { padding: 1cm; }
