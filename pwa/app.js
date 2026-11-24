@@ -23,6 +23,21 @@ let items = JSON.parse(localStorage.getItem("hamyarChecklist") || JSON.stringify
 
 function save() {
   localStorage.setItem("hamyarChecklist", JSON.stringify(items));
+  const project = {
+    name: document.getElementById("projectName").value,
+    address: document.getElementById("projectAddress").value,
+    inspector: document.getElementById("inspectorName").value,
+    date: document.getElementById("visitDate").value
+  };
+  localStorage.setItem("hamyarProject", JSON.stringify(project));
+}
+
+function loadProject() {
+  const project = JSON.parse(localStorage.getItem("hamyarProject") || "{}");
+  document.getElementById("projectName").value = project.name || "";
+  document.getElementById("projectAddress").value = project.address || "";
+  document.getElementById("inspectorName").value = project.inspector || "";
+  document.getElementById("visitDate").value = project.date || "";
 }
 
 function render() {
@@ -54,6 +69,20 @@ function render() {
   `).join("");
 
   // بروزرسانی گزارش چاپ
+  const project = {
+    name: document.getElementById("projectName").value || "پروژه نامشخص‌نشده",
+    address: document.getElementById("projectAddress").value || "—",
+    inspector: document.getElementById("inspectorName").value || "—",
+    date: document.getElementById("visitDate").value || "—"
+  };
+
+  document.getElementById("reportHeader").innerHTML = `
+    <p><strong>نام پروژه:</strong> ${project.name}</p>
+    <p><strong>آدرس:</strong> ${project.address}</p>
+    <p><strong>ناظر:</strong> ${project.inspector} | <strong>تاریخ بازدید:</strong> ${project.date}</p>
+    <p>پیرو بازدید به عمل آمده در تاریخ ${project.date} از پروژه ساختمانی مذکور، گزارش نظارت به شرح ذیل ارائه می‌گردد.</p>
+  `;
+
   const report = document.getElementById("reportContent");
   report.innerHTML = filtered.map(item => `
     <div class="item">
@@ -62,6 +91,17 @@ function render() {
       ${item.notes ? "یادداشت: " + item.notes : ""}
     </div>
   `).join("");
+
+  // خلاصه وضعیت
+  const total = items.length;
+  const completed = items.filter(i => i.status === "COMPLETED").length;
+  const needsFix = items.filter(i => i.status === "REQUIRES_CORRECTION").length;
+  const notDone = items.filter(i => i.status === "NOT_COMPLETED").length;
+
+  document.getElementById("reportSummary").innerHTML = `
+    <h3>خلاصه وضعیت</h3>
+    <p>کل بندها: ${total} | تأیید شده: ${completed} | نیاز به اصلاح: ${needsFix} | بررسی‌نشده: ${notDone}</p>
+  `;
 }
 
 function categoryName(c) {
@@ -96,6 +136,11 @@ function setNotes(id, notes) {
   save();
 }
 
+// رویدادها
+["projectName", "projectAddress", "inspectorName", "visitDate"].forEach(id => {
+  document.getElementById(id).addEventListener("input", () => { save(); render(); });
+});
+
 document.getElementById("search").addEventListener("input", render);
 document.getElementById("categoryFilter").addEventListener("change", render);
 document.getElementById("statusFilter").addEventListener("change", render);
@@ -106,4 +151,5 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(console.error);
 }
 
+loadProject();
 render();
