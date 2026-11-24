@@ -1,7 +1,7 @@
 // چک‌لیست پایه (همان کد قبلی)
 const checklistData = [
   { id: 1, category: "SAFETY", title: "حضور مجری ذی‌صلاح در محل ساختمان", priority: "CRITICAL", regulation: "مبحث ۲ مقررات ملی ساختمان (نظامات اداری)", status: "NOT_COMPLETED", notes: "" },
-  { id: 2, category: "SAFETY", title: "استفاده از کلاه ایمنی توسط کارگران و ناظر", priority: "CRITICAL", regulation: "مبحث ۱۲ مقررات ملی ساختمان (ایمنی و حفاظت کار)", status: "NOT_COMPLETED", notes: "" },
+  { id: 2, category: "SAFETY", title: "استفاده از کلاه ایمنی بتوسط کارگران و ناظر", priority: "CRITICAL", regulation: "مبحث ۱۲ مقررات ملی ساختمان (ایمنی و حفاظت کار)", status: "NOT_COMPLETED", notes: "" },
   { id: 3, category: "SAFETY", title: "استفاده از دستکش ایمنی مناسب با نوع کار", priority: "CRITICAL", regulation: "مبحث ۱۲ مقررات ملی ساختمان", status: "NOT_COMPLETED", notes: "" },
   { id: 4, category: "SAFETY", title: "استفاده از کفش ایمنی مناسب", priority: "HIGH", regulation: "مبحث ۱۲ مقررات ملی ساختمان", status: "NOT_COMPLETED", notes: "" },
   { id: 5, category: "SAFETY", title: "وجود سایر وسایل حفاظت فردی مورد نیاز (جلیقه، ماسک، کمربند ایمنی)", priority: "MEDIUM", regulation: "مبحث ۱۲ مقررات ملی ساختمان", status: "NOT_COMPLETED", notes: "" },
@@ -76,6 +76,7 @@ function loadCurrentProject() {
     loadIsoFromData(project.isoData);
   } else {
     clearCanvas();
+    drawIsoGrid();
   }
 }
 
@@ -185,12 +186,11 @@ function setNotes(id, notes) {
   saveCurrentProject();
 }
 
-// ابزار ایزومتریک بهبودیافته
+// ابزار ایزومتریک بهبودیافته (الهام از Spoolyard)
 const canvas = document.getElementById("isoCanvas");
 const ctx = canvas.getContext("2d");
-let isDrawing = false;
-let lastX = 0;
-let lastY = 0;
+let currentDirection = "north";
+let lastPoint = { x: 450, y: 300 };
 
 function getPipeColor() {
   const size = document.getElementById("pipeSize").value;
@@ -207,27 +207,68 @@ function getPipeColor() {
 function clearCanvas() {
   ctx.fillStyle = "#1E293B";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.lineCap = "round";
 }
 
-function drawGuideGrid() {
+function drawIsoGrid() {
   ctx.strokeStyle = "#334155";
-  ctx.lineWidth = 1;
-  ctx.setLineDash([5, 5]);
-  // خطوط راهنمای ایزومتریک ساده
-  for (let i = 50; i < canvas.width; i += 50) {
+  ctx.lineWidth = 0.8;
+  const step = 40;
+  const angle = Math.PI / 6; // 30 درجه
+
+  // خطوط افقی مایل
+  for (let y = 50; y < canvas.height; y += step) {
     ctx.beginPath();
-    ctx.moveTo(i, 0);
-    ctx.lineTo(i, canvas.height);
+    ctx.moveTo(0, y);
+    ctx.lineTo(canvas.width, y);
     ctx.stroke();
   }
-  for (let j = 50; j < canvas.height; j += 50) {
+
+  // خطوط مایل به راست (۳۰ درجه)
+  for (let x = -200; x < canvas.width + 200; x += step) {
     ctx.beginPath();
-    ctx.moveTo(0, j);
-    ctx.lineTo(canvas.width, j);
+    ctx.moveTo(x, canvas.height);
+    ctx.lineTo(x + canvas.height * Math.tan(angle), 0);
     ctx.stroke();
   }
-  ctx.setLineDash([]);
+
+  // خطوط مایل به چپ (۳۰ درجه)
+  for (let x = -200; x < canvas.width + 200; x += step) {
+    ctx.beginPath();
+    ctx.moveTo(x, canvas.height);
+    ctx.lineTo(x - canvas.height * Math.tan(angle), 0);
+    ctx.stroke();
+  }
+}
+
+function drawPipeInDirection(dir, length = 80) {
+  const angleMap = {
+    north: -Math.PI / 6,
+    east: Math.PI / 6,
+    south: Math.PI * 5 / 6,
+    west: -Math.PI * 5 / 6,
+    up: -Math.PI / 2,
+    down: Math.PI / 2
+  };
+
+  const angle = angleMap[dir] || 0;
+  const endX = lastPoint.x + Math.cos(angle) * length;
+  const endY = lastPoint.y + Math.sin(angle) * length;
+
+  ctx.strokeStyle = getPipeColor();
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(lastPoint.x, lastPoint.y);
+  ctx.lineTo(endX, endY);
+  ctx.stroke();
+
+  // نقطه اتصال
+  ctx.fillStyle = "#F1F5F9";
+  ctx.beginPath();
+  ctx.arc(endX, endY, 4, 0, Math.PI * 2);
+  ctx.fill();
+
+  lastPoint = { x: endX, y: endY };
 }
 
 function loadIsoFromData(dataUrl) {
@@ -239,70 +280,66 @@ function loadIsoFromData(dataUrl) {
   img.src = dataUrl;
 }
 
-canvas.addEventListener("mousedown", (e) => {
-  isDrawing = true;
-  const rect = canvas.getBoundingClientRect();
-  lastX = e.clientX - rect.left;
-  lastY = e.clientY - rect.top;
-  ctx.strokeStyle = getPipeColor();
-  ctx.lineWidth = 4;
+// دکمه‌های جهت
+["dirNorth", "dirEast", "dirSouth", "dirWest", "dirUp", "dirDown"].forEach(id => {
+  document.getElementById(id).addEventListener("click", () => {
+    const dir = id.replace("dir", "").toLowerCase();
+    currentDirection = dir;
+    drawPipeInDirection(dir);
+    saveCurrentProject();
+  });
 });
 
-canvas.addEventListener("mousemove", (e) => {
-  if (!isDrawing) return;
+canvas.addEventListener("click", (e) => {
   const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(x, y);
-  ctx.stroke();
-  lastX = x;
-  lastY = y;
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  lastPoint.x = (e.clientX - rect.left) * scaleX;
+  lastPoint.y = (e.clientY - rect.top) * scaleY;
+  drawPipeInDirection(currentDirection);
+  saveCurrentProject();
 });
-
-canvas.addEventListener("mouseup", () => isDrawing = false);
-canvas.addEventListener("mouseout", () => isDrawing = false);
 
 document.getElementById("addElbowBtn").addEventListener("click", () => {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
   ctx.strokeStyle = getPipeColor();
   ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.arc(cx, cy, 40, Math.PI, Math.PI * 1.5);
+  ctx.arc(lastPoint.x, lastPoint.y, 30, Math.PI, Math.PI * 1.5);
   ctx.stroke();
+  saveCurrentProject();
 });
 
 document.getElementById("addValveBtn").addEventListener("click", () => {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
   ctx.strokeStyle = "#EF4444";
   ctx.lineWidth = 3;
-  ctx.strokeRect(cx - 18, cy - 12, 36, 24);
+  ctx.strokeRect(lastPoint.x - 18, lastPoint.y - 12, 36, 24);
   ctx.beginPath();
-  ctx.moveTo(cx - 18, cy);
-  ctx.lineTo(cx + 18, cy);
+  ctx.moveTo(lastPoint.x - 18, lastPoint.y);
+  ctx.lineTo(lastPoint.x + 18, lastPoint.y);
   ctx.stroke();
+  saveCurrentProject();
 });
 
 document.getElementById("addMeterBtn").addEventListener("click", () => {
-  const cx = canvas.width / 2;
-  const cy = canvas.height / 2;
   ctx.strokeStyle = "#10B981";
   ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+  ctx.arc(lastPoint.x, lastPoint.y, 22, 0, Math.PI * 2);
   ctx.stroke();
   ctx.fillStyle = "#10B981";
-  ctx.font = "12px Tahoma";
-  ctx.fillText("M", cx - 6, cy + 4);
+  ctx.font = "bold 14px Tahoma";
+  ctx.fillText("M", lastPoint.x - 6, lastPoint.y + 5);
+  saveCurrentProject();
 });
 
-document.getElementById("drawGridBtn").addEventListener("click", drawGuideGrid);
+document.getElementById("drawGridBtn").addEventListener("click", () => {
+  drawIsoGrid();
+});
 
 document.getElementById("clearCanvasBtn").addEventListener("click", () => {
   clearCanvas();
+  drawIsoGrid();
+  lastPoint = { x: 450, y: 300 };
   saveCurrentProject();
 });
 
@@ -312,6 +349,7 @@ document.getElementById("saveIsoBtn").addEventListener("click", () => {
 });
 
 // رویدادها
+
 document.getElementById("projectSelect").addEventListener("change", (e) => {
   currentProjectId = e.target.value;
   saveAll();
@@ -337,6 +375,7 @@ if ("serviceWorker" in navigator) {
 
 // شروع
 clearCanvas();
+drawIsoGrid();
 if (projects.length === 0) createNewProject();
 else {
   renderProjectSelect();

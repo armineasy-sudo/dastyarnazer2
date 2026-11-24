@@ -37,7 +37,7 @@
     </section>
 
     <section class="iso-tool">
-      <h2>ابزار ترسیم ایزومتریک گاز</h2>
+      <h2>ابزار ترسیم ایزومتریک گاز (بهبودیافته)</h2>
       <div class="iso-controls">
         <select id="pipeSize">
           <option value="1/2">۱/۲ اینچ</option>
@@ -46,20 +46,24 @@
           <option value="1.5">۱ ۱/۲ اینچ</option>
           <option value="2">۲ اینچ</option>
         </select>
-        <button id="addPipeBtn">لوله مستقیم (کشیدن موس)</button>
+        <button id="dirNorth">شمال (N)</button>
+        <button id="dirEast">شرق (E)</button>
+        <button id="dirSouth">جنوب (S)</button>
+        <button id="dirWest">غرب (W)</button>
+        <button id="dirUp">بالا (Up)</button>
+        <button id="dirDown">پایین (Down)</button>
         <button id="addElbowBtn">زانویی ۹۰°</button>
         <button id="addValveBtn">شیر</button>
         <button id="addMeterBtn">کنتور گاز</button>
-        <button id="drawGridBtn">شبکه راهنما</button>
+        <button id="drawGridBtn">شبکه ایزومتریک</button>
         <button id="clearCanvasBtn">پاک کردن</button>
         <button id="saveIsoBtn">ذخیره در پروژه</button>
       </div>
-      <canvas id="isoCanvas" width="800" height="500"></canvas>
+      <canvas id="isoCanvas" width="900" height="600"></canvas>
       <div class="legend">
-        <strong>راهنمای سایز لوله:</strong>
-        <span>۱/۲" — ۳/۴" — ۱" — ۱½" — ۲"</span>
+        <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید تا لوله در همان جهت کشیده شود. شبکه راهنما ۳۰ درجه است.
       </div>
-      <p class="hint">برای ترسیم شبیه نقشه‌های حرفه‌ای: ابتدا شبکه راهنما را بزنید، سپس سایز لوله را انتخاب کنید و با کشیدن موس لوله بکشید. نمادها را در مرکز نقشه قرار می‌دهند.</p>
+      <p class="hint">این نسخه با الهام از ساختار ابزارهای حرفه‌ای مانند Spoolyard ساخته شده است (گرید ایزومتریک + جهت‌یابی).</p>
     </section>
 
     <section class="controls">
