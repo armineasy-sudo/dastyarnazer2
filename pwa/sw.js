@@ -1,4 +1,4 @@
-const CACHE = "hamyar-nazer-v1";
+const CACHE = "hamyar-nazer-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -8,8 +8,19 @@ const ASSETS = [
 ];
 
 self.addEventListener("install", e => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll(ASSETS))
+  );
+});
+
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.filter(key => key !== CACHE).map(key => caches.delete(key))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
