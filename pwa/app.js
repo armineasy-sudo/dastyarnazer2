@@ -37,7 +37,8 @@ function createNewProject() {
     inspector: "",
     date: "",
     checklist: JSON.parse(JSON.stringify(checklistData)),
-    isoData: null
+    isoData: null,
+    planData: null
   };
   projects.push(newProject);
   currentProjectId = id;
@@ -78,6 +79,11 @@ function loadCurrentProject() {
     clearCanvas();
     drawIsoGrid();
   }
+  if (project.planData) {
+    loadPlanFromData(project.planData);
+  } else {
+    clearPlan();
+  }
 }
 
 function saveCurrentProject() {
@@ -89,6 +95,7 @@ function saveCurrentProject() {
   project.date = document.getElementById("visitDate").value;
   project.checklist = items;
   project.isoData = canvas.toDataURL();
+  project.planData = planCanvas.toDataURL();
   saveAll();
 }
 
@@ -197,11 +204,14 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
-// ابزار ایزومتریک بهبودیافته (الهام از Spoolyard)
+// ابزار ایزومتریک + پلان ۲بعدی
 const canvas = document.getElementById("isoCanvas");
 const ctx = canvas.getContext("2d");
+const planCanvas = document.getElementById("planCanvas");
+const planCtx = planCanvas.getContext("2d");
 let currentDirection = "north";
-let lastPoint = { x: 450, y: 300 };
+let lastPoint = { x: 350, y: 250 };
+let planRisers = [];
 
 function getPipeColor() {
   const size = document.getElementById("pipeSize").value;
@@ -220,11 +230,17 @@ function clearCanvas() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
+function clearPlan() {
+  planCtx.fillStyle = "#1E293B";
+  planCtx.fillRect(0, 0, planCanvas.width, planCanvas.height);
+  planRisers = [];
+}
+
 function drawIsoGrid() {
   ctx.strokeStyle = "#334155";
   ctx.lineWidth = 0.8;
   const step = 40;
-  const angle = Math.PI / 6; // 30 درجه
+  const angle = Math.PI / 6;
 
   for (let y = 50; y < canvas.height; y += step) {
     ctx.beginPath();
@@ -287,6 +303,27 @@ function loadIsoFromData(dataUrl) {
   img.src = dataUrl;
 }
 
+function loadPlanFromData(dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    clearPlan();
+    planCtx.drawImage(img, 0, 0);
+  };
+  img.src = dataUrl;
+}
+
+function drawRiserOnPlan(x, y) {
+  planCtx.strokeStyle = "#F59E0B";
+  planCtx.lineWidth = 3;
+  planCtx.beginPath();
+  planCtx.arc(x, y, 12, 0, Math.PI * 2);
+  planCtx.stroke();
+  planCtx.fillStyle = "#F59E0B";
+  planCtx.font = "bold 12px Tahoma";
+  planCtx.fillText("R", x - 4, y + 4);
+  planRisers.push({x, y});
+}
+
 // دکمه‌های جهت
 ["dirNorth", "dirEast", "dirSouth", "dirWest", "dirUp", "dirDown"].forEach(id => {
   document.getElementById(id).addEventListener("click", () => {
@@ -304,6 +341,16 @@ canvas.addEventListener("click", (e) => {
   lastPoint.x = (e.clientX - rect.left) * scaleX;
   lastPoint.y = (e.clientY - rect.top) * scaleY;
   drawPipeInDirection(currentDirection);
+  saveCurrentProject();
+});
+
+planCanvas.addEventListener("click", (e) => {
+  const rect = planCanvas.getBoundingClientRect();
+  const scaleX = planCanvas.width / rect.width;
+  const scaleY = planCanvas.height / rect.height;
+  const x = (e.clientX - rect.left) * scaleX;
+  const y = (e.clientY - rect.top) * scaleY;
+  drawRiserOnPlan(x, y);
   saveCurrentProject();
 });
 
@@ -339,6 +386,11 @@ document.getElementById("addMeterBtn").addEventListener("click", () => {
   saveCurrentProject();
 });
 
+document.getElementById("addRiserBtn").addEventListener("click", () => {
+  drawRiserOnPlan(planCanvas.width / 2, planCanvas.height / 2);
+  saveCurrentProject();
+});
+
 document.getElementById("drawGridBtn").addEventListener("click", () => {
   drawIsoGrid();
 });
@@ -346,13 +398,14 @@ document.getElementById("drawGridBtn").addEventListener("click", () => {
 document.getElementById("clearCanvasBtn").addEventListener("click", () => {
   clearCanvas();
   drawIsoGrid();
-  lastPoint = { x: 450, y: 300 };
+  clearPlan();
+  lastPoint = { x: 350, y: 250 };
   saveCurrentProject();
 });
 
 document.getElementById("saveIsoBtn").addEventListener("click", () => {
   saveCurrentProject();
-  alert("نقشه ایزومتریک در پروژه ذخیره شد.");
+  alert("نقشه ایزومتریک و پلان در پروژه ذخیره شد.");
 });
 
 // رویدادها
@@ -383,6 +436,7 @@ if ("serviceWorker" in navigator) {
 // شروع
 clearCanvas();
 drawIsoGrid();
+clearPlan();
 if (projects.length === 0) createNewProject();
 else {
   renderProjectSelect();
