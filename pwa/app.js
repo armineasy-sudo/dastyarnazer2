@@ -324,6 +324,20 @@ function drawRiserOnPlan(x, y) {
   planRisers.push({x, y});
 }
 
+function preparePrint() {
+  const mapsDiv = document.getElementById("reportMaps");
+  mapsDiv.innerHTML = `
+    <div style="text-align:center; margin:1rem 0;">
+      <h3>پلان ۲بعدی</h3>
+      <img src="${planCanvas.toDataURL()}" style="max-width:100%; height:auto; border:1px solid #ccc;" />
+    </div>
+    <div style="text-align:center; margin:1rem 0;">
+      <h3>نمای ایزومتریک</h3>
+      <img src="${canvas.toDataURL()}" style="max-width:100%; height:auto; border:1px solid #ccc;" />
+    </div>
+  `;
+}
+
 // دکمه‌های جهت
 ["dirNorth", "dirEast", "dirSouth", "dirWest", "dirUp", "dirDown"].forEach(id => {
   document.getElementById(id).addEventListener("click", () => {
@@ -427,7 +441,11 @@ document.getElementById("deleteProjectBtn").addEventListener("click", deleteCurr
 document.getElementById("search").addEventListener("input", render);
 document.getElementById("categoryFilter").addEventListener("change", render);
 document.getElementById("statusFilter").addEventListener("change", render);
-document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+document.getElementById("printBtn").addEventListener("click", () => {
+  preparePrint();
+  setTimeout(() => window.print(), 300);
+});
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(console.error);
