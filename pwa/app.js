@@ -1,4 +1,4 @@
-// چک‌لیست پایه
+// چک‌لیست پایه (همان کد قبلی)
 const checklistData = [
   { id: 1, category: "SAFETY", title: "حضور مجری ذی‌صلاح در محل ساختمان", priority: "CRITICAL", regulation: "مبحث ۲ مقررات ملی ساختمان (نظامات اداری)", status: "NOT_COMPLETED", notes: "" },
   { id: 2, category: "SAFETY", title: "استفاده از کلاه ایمنی توسط کارگران و ناظر", priority: "CRITICAL", regulation: "مبحث ۱۲ مقررات ملی ساختمان (ایمنی و حفاظت کار)", status: "NOT_COMPLETED", notes: "" },
@@ -185,19 +185,49 @@ function setNotes(id, notes) {
   saveCurrentProject();
 }
 
-// ابزار ایزومتریک ساده
+// ابزار ایزومتریک بهبودیافته
 const canvas = document.getElementById("isoCanvas");
 const ctx = canvas.getContext("2d");
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
 
+function getPipeColor() {
+  const size = document.getElementById("pipeSize").value;
+  const colors = {
+    "1/2": "#3B82F6",
+    "3/4": "#10B981",
+    "1": "#F59E0B",
+    "1.5": "#EF4444",
+    "2": "#8B5CF6"
+  };
+  return colors[size] || "#3B82F6";
+}
+
 function clearCanvas() {
   ctx.fillStyle = "#1E293B";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = "#3B82F6";
-  ctx.lineWidth = 3;
   ctx.lineCap = "round";
+}
+
+function drawGuideGrid() {
+  ctx.strokeStyle = "#334155";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 5]);
+  // خطوط راهنمای ایزومتریک ساده
+  for (let i = 50; i < canvas.width; i += 50) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i, canvas.height);
+    ctx.stroke();
+  }
+  for (let j = 50; j < canvas.height; j += 50) {
+    ctx.beginPath();
+    ctx.moveTo(0, j);
+    ctx.lineTo(canvas.width, j);
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
 }
 
 function loadIsoFromData(dataUrl) {
@@ -214,6 +244,8 @@ canvas.addEventListener("mousedown", (e) => {
   const rect = canvas.getBoundingClientRect();
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
+  ctx.strokeStyle = getPipeColor();
+  ctx.lineWidth = 4;
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -232,33 +264,42 @@ canvas.addEventListener("mousemove", (e) => {
 canvas.addEventListener("mouseup", () => isDrawing = false);
 canvas.addEventListener("mouseout", () => isDrawing = false);
 
-// دکمه‌های ایزو
- document.getElementById("addPipeBtn").addEventListener("click", () => {
-  alert("با کشیدن موس روی بوم، لوله مستقیم بکشید.");
-});
-
 document.getElementById("addElbowBtn").addEventListener("click", () => {
-  // رسم یک زانویی ساده ایزومتریک در مرکز
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
-  ctx.strokeStyle = "#F59E0B";
+  ctx.strokeStyle = getPipeColor();
+  ctx.lineWidth = 4;
   ctx.beginPath();
-  ctx.arc(cx, cy, 30, 0, Math.PI / 2);
+  ctx.arc(cx, cy, 40, Math.PI, Math.PI * 1.5);
   ctx.stroke();
-  ctx.strokeStyle = "#3B82F6";
 });
 
 document.getElementById("addValveBtn").addEventListener("click", () => {
   const cx = canvas.width / 2;
   const cy = canvas.height / 2;
   ctx.strokeStyle = "#EF4444";
-  ctx.strokeRect(cx - 15, cy - 15, 30, 30);
+  ctx.lineWidth = 3;
+  ctx.strokeRect(cx - 18, cy - 12, 36, 24);
   ctx.beginPath();
-  ctx.moveTo(cx - 15, cy);
-  ctx.lineTo(cx + 15, cy);
+  ctx.moveTo(cx - 18, cy);
+  ctx.lineTo(cx + 18, cy);
   ctx.stroke();
-  ctx.strokeStyle = "#3B82F6";
 });
+
+document.getElementById("addMeterBtn").addEventListener("click", () => {
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  ctx.strokeStyle = "#10B981";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 20, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = "#10B981";
+  ctx.font = "12px Tahoma";
+  ctx.fillText("M", cx - 6, cy + 4);
+});
+
+document.getElementById("drawGridBtn").addEventListener("click", drawGuideGrid);
 
 document.getElementById("clearCanvasBtn").addEventListener("click", () => {
   clearCanvas();
