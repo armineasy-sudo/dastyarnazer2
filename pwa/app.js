@@ -359,6 +359,24 @@ function preparePrint() {
   `;
 }
 
+function getCanvasPoint(canvasEl, event) {
+  const rect = canvasEl.getBoundingClientRect();
+  const scaleX = canvasEl.width / rect.width;
+  const scaleY = canvasEl.height / rect.height;
+  let clientX, clientY;
+  if (event.touches && event.touches.length > 0) {
+    clientX = event.touches[0].clientX;
+    clientY = event.touches[0].clientY;
+  } else {
+    clientX = event.clientX;
+    clientY = event.clientY;
+  }
+  return {
+    x: (clientX - rect.left) * scaleX,
+    y: (clientY - rect.top) * scaleY
+  };
+}
+
 // دکمه‌های جهت
 ["dirNorth", "dirEast", "dirSouth", "dirWest", "dirUp", "dirDown"].forEach(id => {
   document.getElementById(id).addEventListener("click", () => {
@@ -369,25 +387,27 @@ function preparePrint() {
   });
 });
 
-canvas.addEventListener("click", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
-  lastPoint.x = (e.clientX - rect.left) * scaleX;
-  lastPoint.y = (e.clientY - rect.top) * scaleY;
+function handleCanvasInteraction(e) {
+  e.preventDefault();
+  const point = getCanvasPoint(canvas, e);
+  lastPoint.x = point.x;
+  lastPoint.y = point.y;
   drawPipeInDirection(currentDirection);
   saveCurrentProject();
-});
+}
 
-planCanvas.addEventListener("click", (e) => {
-  const rect = planCanvas.getBoundingClientRect();
-  const scaleX = planCanvas.width / rect.width;
-  const scaleY = planCanvas.height / rect.height;
-  const x = (e.clientX - rect.left) * scaleX;
-  const y = (e.clientY - rect.top) * scaleY;
-  drawRiserOnPlan(x, y);
+canvas.addEventListener("click", handleCanvasInteraction);
+canvas.addEventListener("touchend", handleCanvasInteraction, { passive: false });
+
+function handlePlanInteraction(e) {
+  e.preventDefault();
+  const point = getCanvasPoint(planCanvas, e);
+  drawRiserOnPlan(point.x, point.y);
   saveCurrentProject();
-});
+}
+
+planCanvas.addEventListener("click", handlePlanInteraction);
+planCanvas.addEventListener("touchend", handlePlanInteraction, { passive: false });
 
 document.getElementById("addElbowBtn").addEventListener("click", () => {
   ctx.strokeStyle = getPipeColor();
