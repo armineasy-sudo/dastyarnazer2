@@ -1,4 +1,4 @@
-// چک‌لیست پایه از ChecklistSeeder اندروید
+// چک‌لیست پایه
 const checklistData = [
   { id: 1, category: "SAFETY", title: "حضور مجری ذی‌صلاح در محل ساختمان", priority: "CRITICAL", regulation: "مبحث ۲ مقررات ملی ساختمان (نظامات اداری)", status: "NOT_COMPLETED", notes: "" },
   { id: 2, category: "SAFETY", title: "استفاده از کلاه ایمنی توسط کارگران و ناظر", priority: "CRITICAL", regulation: "مبحث ۱۲ مقررات ملی ساختمان (ایمنی و حفاظت کار)", status: "NOT_COMPLETED", notes: "" },
@@ -19,25 +19,76 @@ const checklistData = [
   { id: 17, category: "BEFORE_FINAL_APPROVAL", title: "تست عملکرد تجهیزات موتورخانه (دیگ، مشعل، پمپ)", priority: "MEDIUM", regulation: "مبحث ۱۴", status: "NOT_COMPLETED", notes: "" }
 ];
 
-let items = JSON.parse(localStorage.getItem("hamyarChecklist") || JSON.stringify(checklistData));
+let projects = JSON.parse(localStorage.getItem("hamyarProjects") || "[]");
+let currentProjectId = localStorage.getItem("hamyarCurrentProject") || null;
+let items = [];
 
-function save() {
-  localStorage.setItem("hamyarChecklist", JSON.stringify(items));
-  const project = {
-    name: document.getElementById("projectName").value,
-    address: document.getElementById("projectAddress").value,
-    inspector: document.getElementById("inspectorName").value,
-    date: document.getElementById("visitDate").value
-  };
-  localStorage.setItem("hamyarProject", JSON.stringify(project));
+function saveAll() {
+  localStorage.setItem("hamyarProjects", JSON.stringify(projects));
+  localStorage.setItem("hamyarCurrentProject", currentProjectId);
 }
 
-function loadProject() {
-  const project = JSON.parse(localStorage.getItem("hamyarProject") || "{}");
+function createNewProject() {
+  const id = Date.now().toString();
+  const newProject = {
+    id,
+    name: "پروژه جدید",
+    address: "",
+    inspector: "",
+    date: "",
+    checklist: JSON.parse(JSON.stringify(checklistData))
+  };
+  projects.push(newProject);
+  currentProjectId = id;
+  saveAll();
+  loadCurrentProject();
+  renderProjectSelect();
+  render();
+}
+
+function deleteCurrentProject() {
+  if (!currentProjectId || projects.length <= 1) {
+    alert("حداقل یک پروژه باید باقی بماند.");
+    return;
+  }
+  if (!confirm("آیا مطمئنید می‌خواهید این پروژه را حذف کنید؟")) return;
+  projects = projects.filter(p => p.id !== currentProjectId);
+  currentProjectId = projects[0]?.id || null;
+  saveAll();
+  loadCurrentProject();
+  renderProjectSelect();
+  render();
+}
+
+function loadCurrentProject() {
+  const project = projects.find(p => p.id === currentProjectId);
+  if (!project) {
+    if (projects.length === 0) createNewProject();
+    return;
+  }
+  items = project.checklist;
   document.getElementById("projectName").value = project.name || "";
   document.getElementById("projectAddress").value = project.address || "";
   document.getElementById("inspectorName").value = project.inspector || "";
   document.getElementById("visitDate").value = project.date || "";
+}
+
+function saveCurrentProject() {
+  const project = projects.find(p => p.id === currentProjectId);
+  if (!project) return;
+  project.name = document.getElementById("projectName").value;
+  project.address = document.getElementById("projectAddress").value;
+  project.inspector = document.getElementById("inspectorName").value;
+  project.date = document.getElementById("visitDate").value;
+  project.checklist = items;
+  saveAll();
+}
+
+function renderProjectSelect() {
+  const select = document.getElementById("projectSelect");
+  select.innerHTML = projects.map(p => 
+    `<option value="${p.id}" ${p.id === currentProjectId ? "selected" : ""}>${p.name || "پروژه بدون نام"}</option>`
+  ).join("");
 }
 
 function render() {
@@ -68,23 +119,16 @@ function render() {
     </div>
   `).join("");
 
-  // بروزرسانی گزارش چاپ
-  const project = {
-    name: document.getElementById("projectName").value || "پروژه نامشخص‌نشده",
-    address: document.getElementById("projectAddress").value || "—",
-    inspector: document.getElementById("inspectorName").value || "—",
-    date: document.getElementById("visitDate").value || "—"
-  };
-
+  // گزارش
+  const project = projects.find(p => p.id === currentProjectId) || {};
   document.getElementById("reportHeader").innerHTML = `
-    <p><strong>نام پروژه:</strong> ${project.name}</p>
-    <p><strong>آدرس:</strong> ${project.address}</p>
-    <p><strong>ناظر:</strong> ${project.inspector} | <strong>تاریخ بازدید:</strong> ${project.date}</p>
-    <p>پیرو بازدید به عمل آمده در تاریخ ${project.date} از پروژه ساختمانی مذکور، گزارش نظارت به شرح ذیل ارائه می‌گردد.</p>
+    <p><strong>نام پروژه:</strong> ${project.name || "پروژه نامشخص‌نشده"}</p>
+    <p><strong>آدرس:</strong> ${project.address || "—"}</p>
+    <p><strong>ناظر:</strong> ${project.inspector || "—"} | <strong>تاریخ بازدید:</strong> ${project.date || "—"}</p>
+    <p>پیرو بازدید به عمل آمده در تاریخ ${project.date || "—"} از پروژه ساختمانی مذکور، گزارش نظارت به شرح ذیل ارائه می‌گردد.</p>
   `;
 
-  const report = document.getElementById("reportContent");
-  report.innerHTML = filtered.map(item => `
+  document.getElementById("reportContent").innerHTML = filtered.map(item => `
     <div class="item">
       <strong>${item.title}</strong><br>
       وضعیت: ${statusName(item.status)} | مرجع: ${item.regulation}<br>
@@ -92,7 +136,6 @@ function render() {
     </div>
   `).join("");
 
-  // خلاصه وضعیت
   const total = items.length;
   const completed = items.filter(i => i.status === "COMPLETED").length;
   const needsFix = items.filter(i => i.status === "REQUIRES_CORRECTION").length;
@@ -126,19 +169,29 @@ function statusName(s) {
 function setStatus(id, status) {
   const item = items.find(i => i.id === id);
   if (item) item.status = status;
-  save();
+  saveCurrentProject();
   render();
 }
 
 function setNotes(id, notes) {
   const item = items.find(i => i.id === id);
   if (item) item.notes = notes;
-  save();
+  saveCurrentProject();
 }
 
 // رویدادها
+document.getElementById("projectSelect").addEventListener("change", (e) => {
+  currentProjectId = e.target.value;
+  saveAll();
+  loadCurrentProject();
+  render();
+});
+
+document.getElementById("newProjectBtn").addEventListener("click", createNewProject);
+document.getElementById("deleteProjectBtn").addEventListener("click", deleteCurrentProject);
+
 ["projectName", "projectAddress", "inspectorName", "visitDate"].forEach(id => {
-  document.getElementById(id).addEventListener("input", () => { save(); render(); });
+  document.getElementById(id).addEventListener("input", () => { saveCurrentProject(); render(); });
 });
 
 document.getElementById("search").addEventListener("input", render);
@@ -146,10 +199,14 @@ document.getElementById("categoryFilter").addEventListener("change", render);
 document.getElementById("statusFilter").addEventListener("change", render);
 document.getElementById("printBtn").addEventListener("click", () => window.print());
 
-// ثبت Service Worker برای PWA
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js").catch(console.error);
 }
 
-loadProject();
-render();
+// شروع
+if (projects.length === 0) createNewProject();
+else {
+  renderProjectSelect();
+  loadCurrentProject();
+  render();
+}
