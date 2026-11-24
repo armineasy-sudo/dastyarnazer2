@@ -1,4 +1,4 @@
-const CACHE = "hamyar-nazer-v2";
+const CACHE = "hamyar-nazer-v3";
 const ASSETS = [
   "./",
   "./index.html",
