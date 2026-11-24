@@ -219,6 +219,13 @@ ctx.imageSmoothingQuality = "high";
 planCtx.imageSmoothingEnabled = true;
 planCtx.imageSmoothingQuality = "high";
 
+function updateScaleDisplay() {
+  const scale = document.getElementById("scaleSelect").value;
+  const scaleText = scale === "50" ? "۱:۵۰" : "۱:۱۰۰";
+  const el = document.getElementById("currentScale");
+  if (el) el.textContent = scaleText;
+}
+
 function getPipeColor() {
   const size = document.getElementById("pipeSize").value;
   const colors = {
@@ -436,6 +443,8 @@ document.getElementById("saveIsoBtn").addEventListener("click", () => {
   alert("نقشه ایزومتریک و پلان در پروژه ذخیره شد.");
 });
 
+document.getElementById("scaleSelect").addEventListener("change", updateScaleDisplay);
+
 // رویدادها
 
 document.getElementById("projectSelect").addEventListener("change", (e) => {
@@ -469,6 +478,7 @@ if ("serviceWorker" in navigator) {
 clearCanvas();
 drawIsoGrid();
 clearPlan();
+updateScaleDisplay();
 if (projects.length === 0) createNewProject();
 else {
   renderProjectSelect();
