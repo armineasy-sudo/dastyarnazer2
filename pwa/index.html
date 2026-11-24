@@ -48,6 +48,10 @@
       <div id="tab-iso" class="tool-panel active">
         <h3>ترسیم نقشه ایزومتریک گاز</h3>
         <div class="iso-controls">
+          <select id="scaleSelect">
+            <option value="100">مقیاس ۱:۱۰۰</option>
+            <option value="50">مقیاس ۱:۵۰</option>
+          </select>
           <select id="pipeSize">
             <option value="1/2">۱/۲ اینچ</option>
             <option value="3/4">۳/۴ اینچ</option>
@@ -64,15 +68,27 @@
           <button id="addElbowBtn">زانویی ۹۰°</button>
           <button id="addValveBtn">شیر</button>
           <button id="addMeterBtn">کنتور گاز</button>
+          <button id="addRiserBtn">رایزر</button>
           <button id="drawGridBtn">شبکه ایزومتریک</button>
           <button id="clearCanvasBtn">پاک کردن</button>
           <button id="saveIsoBtn">ذخیره در پروژه</button>
         </div>
-        <canvas id="isoCanvas" width="900" height="600"></canvas>
-        <div class="legend">
-          <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید تا لوله در همان جهت کشیده شود. شبکه راهنما ۳۰ درجه است.
+
+        <div class="iso-layout">
+          <div class="plan-panel">
+            <h4>پلان ۲بعدی (محل رایزرها)</h4>
+            <canvas id="planCanvas" width="400" height="300"></canvas>
+          </div>
+          <div class="iso-panel">
+            <h4>نمای ایزومتریک</h4>
+            <canvas id="isoCanvas" width="700" height="500"></canvas>
+          </div>
         </div>
-        <p class="hint">این نسخه با الهام از ساختار ابزارهای حرفه‌ای مانند Spoolyard ساخته شده است (گرید ایزومتریک + جهت‌یابی).</p>
+
+        <div class="legend">
+          <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید. رایزرها را در پلان ۲بعدی قرار دهید. مقیاس قابل تغییر است.
+        </div>
+        <p class="hint">ساختار نزدیک به نقشه‌های استاندارد: پلان ۲D + ایزومتریک + مقیاس.</p>
       </div>
 
       <div id="tab-calc" class="tool-panel">

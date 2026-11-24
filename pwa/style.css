@@ -76,15 +76,31 @@ header h1 {
 .iso-controls button:hover {
   background: #2563EB;
 }
-#isoCanvas {
+.iso-layout {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.plan-panel, .iso-panel {
+  background: #0F172A;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+}
+.plan-panel h4, .iso-panel h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  text-align: center;
+}
+#isoCanvas, #planCanvas {
   border: 2px solid #334155;
   border-radius: 8px;
-  background: #0F172A;
+  background: #1E293B;
   max-width: 100%;
   height: auto;
   cursor: crosshair;
   display: block;
-  margin: 0 auto;
 }
 .legend {
   margin-top: 0.75rem;
