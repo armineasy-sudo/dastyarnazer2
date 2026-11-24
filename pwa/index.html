@@ -39,14 +39,27 @@
     <section class="iso-tool">
       <h2>ابزار ترسیم ایزومتریک گاز</h2>
       <div class="iso-controls">
-        <button id="addPipeBtn">افزودن لوله مستقیم</button>
-        <button id="addElbowBtn">افزودن زانویی ۹۰ درجه</button>
-        <button id="addValveBtn">افزودن شیر</button>
-        <button id="clearCanvasBtn">پاک کردن نقشه</button>
-        <button id="saveIsoBtn">ذخیره نقشه در پروژه</button>
+        <select id="pipeSize">
+          <option value="1/2">۱/۲ اینچ</option>
+          <option value="3/4">۳/۴ اینچ</option>
+          <option value="1">۱ اینچ</option>
+          <option value="1.5">۱ ۱/۲ اینچ</option>
+          <option value="2">۲ اینچ</option>
+        </select>
+        <button id="addPipeBtn">لوله مستقیم (کشیدن موس)</button>
+        <button id="addElbowBtn">زانویی ۹۰°</button>
+        <button id="addValveBtn">شیر</button>
+        <button id="addMeterBtn">کنتور گاز</button>
+        <button id="drawGridBtn">شبکه راهنما</button>
+        <button id="clearCanvasBtn">پاک کردن</button>
+        <button id="saveIsoBtn">ذخیره در پروژه</button>
       </div>
-      <canvas id="isoCanvas" width="600" height="400"></canvas>
-      <p class="hint">با کلیک و کشیدن موس روی بوم، لوله مستقیم بکشید. ابزارها ساده هستند و برای شروع کار مناسب‌اند.</p>
+      <canvas id="isoCanvas" width="800" height="500"></canvas>
+      <div class="legend">
+        <strong>راهنمای سایز لوله:</strong>
+        <span>۱/۲" — ۳/۴" — ۱" — ۱½" — ۲"</span>
+      </div>
+      <p class="hint">برای ترسیم شبیه نقشه‌های حرفه‌ای: ابتدا شبکه راهنما را بزنید، سپس سایز لوله را انتخاب کنید و با کشیدن موس لوله بکشید. نمادها را در مرکز نقشه قرار می‌دهند.</p>
     </section>
 
     <section class="controls">
