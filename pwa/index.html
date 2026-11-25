@@ -36,11 +36,9 @@
       </div>
     </section>
 
-    <!-- ابزارهای مهندسی مکانیک -->
     <section class="mech-tools">
       <h2>ابزارهای مهندسی مکانیک</h2>
 
-      <!-- ابزار جداگانه: ایزومتریک + پلان -->
       <div class="tool-card">
         <h3>📐 ابزار ترسیم ایزومتریک گاز + پلان ۲بعدی</h3>
         <div class="iso-controls">
@@ -63,8 +61,10 @@
           <button id="dirDown">پایین</button>
           <button id="addElbowBtn">زانویی</button>
           <button id="addValveBtn">شیر</button>
-          <button id="addMeterBtn">کنتور</button>
-          <button id="addRiserBtn">رایزر</button>
+          <button id="addMeterBtn">کنتور (M)</button>
+          <button id="addRiserBtn">رایزر (R)</button>
+          <button id="addConsumerBtn">مصرف‌کننده</button>
+          <button id="addLabelBtn">برچسب سایز</button>
           <button id="drawGridBtn">شبکه</button>
           <button id="clearCanvasBtn">پاک کردن</button>
           <button id="saveIsoBtn">ذخیره</button>
@@ -72,7 +72,7 @@
 
         <div class="iso-layout">
           <div class="plan-panel">
-            <h4>پلان ۲بعدی (رایزرها)</h4>
+            <h4>پلان ۲بعدی (محل رایزرها)</h4>
             <canvas id="planCanvas" width="500" height="350"></canvas>
           </div>
           <div class="iso-panel">
@@ -83,11 +83,10 @@
 
         <p class="legend">
           جهت را انتخاب کنید → روی نقشه کلیک/لمس کنید. رایزر روی پلان قرار می‌گیرد.
-          مقیاس: <strong id="currentScale">۱:۱۰۰</strong>
+          مقیاس: <strong id="currentScale">۱:۱۰۰</strong> | رنگ لوله بر اساس سایز
         </p>
       </div>
 
-      <!-- سایر ابزارها -->
       <div class="tool-card">
         <h3>محاسبات سریع</h3>
         <p>به زودی: سایز لوله، افت فشار، مصرف گاز</p>
