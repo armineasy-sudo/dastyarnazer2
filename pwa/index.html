@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>همیار ناظر - چک‌لیست و گزارش</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
@@ -32,20 +32,17 @@
       </div>
       <div class="form-row">
         <input type="text" id="inspectorName" placeholder="نام ناظر" />
-        <input type="text" id="visitDate" placeholder="تاریخ بازدید (مثال: 1405/09/04)" />
+        <input type="text" id="visitDate" placeholder="تاریخ بازدید" />
       </div>
     </section>
 
+    <!-- ابزارهای مهندسی مکانیک -->
     <section class="mech-tools">
       <h2>ابزارهای مهندسی مکانیک</h2>
-      <div class="tools-tabs">
-        <button class="tab-btn active" data-tab="iso">ایزومتریک گاز</button>
-        <button class="tab-btn" data-tab="calc">محاسبات سریع</button>
-        <button class="tab-btn" data-tab="other">سایر ابزارها</button>
-      </div>
 
-      <div id="tab-iso" class="tool-panel active">
-        <h3>ترسیم نقشه ایزومتریک گاز</h3>
+      <!-- ابزار جداگانه: ایزومتریک + پلان -->
+      <div class="tool-card">
+        <h3>📐 ابزار ترسیم ایزومتریک گاز + پلان ۲بعدی</h3>
         <div class="iso-controls">
           <select id="scaleSelect">
             <option value="100">مقیاس ۱:۱۰۰</option>
@@ -55,49 +52,45 @@
             <option value="1/2">۱/۲ اینچ</option>
             <option value="3/4">۳/۴ اینچ</option>
             <option value="1">۱ اینچ</option>
-            <option value="1.5">۱ ۱/۲ اینچ</option>
+            <option value="1.5">۱½ اینچ</option>
             <option value="2">۲ اینچ</option>
           </select>
-          <button id="dirNorth">شمال (N)</button>
-          <button id="dirEast">شرق (E)</button>
-          <button id="dirSouth">جنوب (S)</button>
-          <button id="dirWest">غرب (W)</button>
-          <button id="dirUp">بالا (Up)</button>
-          <button id="dirDown">پایین (Down)</button>
-          <button id="addElbowBtn">زانویی ۹۰°</button>
+          <button id="dirNorth">شمال</button>
+          <button id="dirEast">شرق</button>
+          <button id="dirSouth">جنوب</button>
+          <button id="dirWest">غرب</button>
+          <button id="dirUp">بالا</button>
+          <button id="dirDown">پایین</button>
+          <button id="addElbowBtn">زانویی</button>
           <button id="addValveBtn">شیر</button>
-          <button id="addMeterBtn">کنتور گاز</button>
+          <button id="addMeterBtn">کنتور</button>
           <button id="addRiserBtn">رایزر</button>
-          <button id="drawGridBtn">شبکه ایزومتریک</button>
+          <button id="drawGridBtn">شبکه</button>
           <button id="clearCanvasBtn">پاک کردن</button>
-          <button id="saveIsoBtn">ذخیره در پروژه</button>
+          <button id="saveIsoBtn">ذخیره</button>
         </div>
 
         <div class="iso-layout">
           <div class="plan-panel">
-            <h4>پلان ۲بعدی (محل رایزرها)</h4>
-            <canvas id="planCanvas" width="400" height="300"></canvas>
+            <h4>پلان ۲بعدی (رایزرها)</h4>
+            <canvas id="planCanvas" width="500" height="350"></canvas>
           </div>
           <div class="iso-panel">
             <h4>نمای ایزومتریک</h4>
-            <canvas id="isoCanvas" width="700" height="500"></canvas>
+            <canvas id="isoCanvas" width="700" height="480"></canvas>
           </div>
         </div>
 
-        <div class="legend">
-          <strong>راهنما:</strong> ابتدا جهت را انتخاب کنید، سپس روی نقشه کلیک کنید. رایزرها را در پلان ۲بعدی قرار دهید.
-          <br>مقیاس فعلی: <span id="currentScale">۱:۱۰۰</span> | رنگ لوله بر اساس سایز تغییر می‌کند.
-        </div>
+        <p class="legend">
+          جهت را انتخاب کنید → روی نقشه کلیک/لمس کنید. رایزر روی پلان قرار می‌گیرد.
+          مقیاس: <strong id="currentScale">۱:۱۰۰</strong>
+        </p>
       </div>
 
-      <div id="tab-calc" class="tool-panel">
+      <!-- سایر ابزارها -->
+      <div class="tool-card">
         <h3>محاسبات سریع</h3>
-        <p>به زودی ابزارهای محاسبه سایز لوله، افت فشار، و مصرف اضافه می‌شود.</p>
-      </div>
-
-      <div id="tab-other" class="tool-panel">
-        <h3>سایر ابزارها</h3>
-        <p>مکان برای ابزارهای آینده</p>
+        <p>به زودی: سایز لوله، افت فشار، مصرف گاز</p>
       </div>
     </section>
 
