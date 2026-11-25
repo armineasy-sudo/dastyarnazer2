@@ -137,6 +137,10 @@ function getColor() {
   return {"1/2":"#3B82F6","3/4":"#10B981","1":"#F59E0B","1.5":"#EF4444","2":"#8B5CF6"}[s] || "#3B82F6";
 }
 
+function getSizeText() {
+  return document.getElementById("pipeSize").value;
+}
+
 function initIso() {
   isoCtx.fillStyle = "#0F172A";
   isoCtx.fillRect(0,0,isoCanvas.width,isoCanvas.height);
@@ -183,16 +187,17 @@ function drawPipe(dir, len=90) {
   const ny = lastIso.y + Math.sin(ang)*len;
 
   isoCtx.strokeStyle = getColor();
-  isoCtx.lineWidth = 6;
+  isoCtx.lineWidth = 5;
   isoCtx.lineCap = "round";
   isoCtx.beginPath();
   isoCtx.moveTo(lastIso.x, lastIso.y);
   isoCtx.lineTo(nx, ny);
   isoCtx.stroke();
 
+  // نقطه اتصال
   isoCtx.fillStyle = "#fff";
   isoCtx.beginPath();
-  isoCtx.arc(nx, ny, 5, 0, Math.PI*2);
+  isoCtx.arc(nx, ny, 4, 0, Math.PI*2);
   isoCtx.fill();
 
   lastIso = {x: nx, y: ny};
@@ -200,31 +205,50 @@ function drawPipe(dir, len=90) {
 
 function addSymbol(type) {
   const x = lastIso.x, y = lastIso.y;
-  isoCtx.strokeStyle = getColor();
-  isoCtx.lineWidth = 3;
+  isoCtx.strokeStyle = "#EF4444";
+  isoCtx.lineWidth = 2.5;
+  isoCtx.fillStyle = "#EF4444";
+  isoCtx.font = "bold 12px Tahoma";
+
   if (type === "elbow") {
+    isoCtx.strokeStyle = getColor();
+    isoCtx.lineWidth = 4;
     isoCtx.beginPath();
-    isoCtx.arc(x, y, 28, Math.PI, Math.PI*1.5);
+    isoCtx.arc(x, y, 26, Math.PI, Math.PI*1.5);
     isoCtx.stroke();
   } else if (type === "valve") {
-    isoCtx.strokeRect(x-16, y-10, 32, 20);
-    isoCtx.beginPath(); isoCtx.moveTo(x-16,y); isoCtx.lineTo(x+16,y); isoCtx.stroke();
+    // نماد شیر شبیه نقشه‌های رایج (مربع + خط)
+    isoCtx.strokeRect(x-14, y-8, 28, 16);
+    isoCtx.beginPath();
+    isoCtx.moveTo(x-14, y);
+    isoCtx.lineTo(x+14, y);
+    isoCtx.stroke();
+    isoCtx.fillText("V", x-4, y+4);
   } else if (type === "meter") {
-    isoCtx.beginPath(); isoCtx.arc(x, y, 20, 0, Math.PI*2); isoCtx.stroke();
+    // کنتور گاز (M)
+    isoCtx.beginPath();
+    isoCtx.arc(x, y, 18, 0, Math.PI*2);
+    isoCtx.stroke();
+    isoCtx.fillText("M", x-5, y+4);
+  } else if (type === "consumer") {
+    // مصرف‌کننده (باکس ساده)
+    isoCtx.strokeRect(x-12, y-12, 24, 24);
+    isoCtx.fillText("C", x-4, y+4);
+  } else if (type === "label") {
+    // برچسب سایز لوله
     isoCtx.fillStyle = getColor();
-    isoCtx.font = "bold 14px Tahoma";
-    isoCtx.fillText("M", x-5, y+5);
+    isoCtx.fillText(getSizeText() + "\"", x+8, y-8);
   }
 }
 
 function addRiser(x, y) {
   planCtx.strokeStyle = "#F59E0B";
-  planCtx.lineWidth = 3;
+  planCtx.lineWidth = 2.5;
   planCtx.beginPath();
-  planCtx.arc(x, y, 14, 0, Math.PI*2);
+  planCtx.arc(x, y, 13, 0, Math.PI*2);
   planCtx.stroke();
   planCtx.fillStyle = "#F59E0B";
-  planCtx.font = "bold 13px Tahoma";
+  planCtx.font = "bold 12px Tahoma";
   planCtx.fillText("R", x-4, y+4);
 }
 
@@ -272,7 +296,7 @@ function preparePrint() {
   `;
 }
 
-// رویدادهای ایزومتریک
+// رویدادها
 ["dirNorth","dirEast","dirSouth","dirWest","dirUp","dirDown"].forEach(id => {
   const el = document.getElementById(id);
   if (el) el.onclick = () => {
@@ -311,6 +335,10 @@ const addValve = document.getElementById("addValveBtn");
 if (addValve) addValve.onclick = () => { addSymbol("valve"); saveCurrentProject(); };
 const addMeter = document.getElementById("addMeterBtn");
 if (addMeter) addMeter.onclick = () => { addSymbol("meter"); saveCurrentProject(); };
+const addConsumer = document.getElementById("addConsumerBtn");
+if (addConsumer) addConsumer.onclick = () => { addSymbol("consumer"); saveCurrentProject(); };
+const addLabel = document.getElementById("addLabelBtn");
+if (addLabel) addLabel.onclick = () => { addSymbol("label"); saveCurrentProject(); };
 const addRiserBtn = document.getElementById("addRiserBtn");
 if (addRiserBtn) addRiserBtn.onclick = () => {
   addRiser(planCanvas.width/2, planCanvas.height/2);
